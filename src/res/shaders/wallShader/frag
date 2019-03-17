@@ -1,0 +1,12 @@
+#version 330 core
+
+in float height;
+
+out vec4 color;
+
+void main() {
+    float grey = (height - 2) / 10;
+    color = vec4(grey, grey, grey, 1);
+}
+
+

@@ -99,14 +99,14 @@ public class Shader {
 						}
 					}
 					int vecSize = 0;
-					if (type.equals("float")) {
+					if (type.startsWith("float")) {
 						vecSize = 1;
 						tempuniflist.add(new Uniform(name, vecSize));
 					}else if (type.startsWith("vec")) {
-						vecSize = Integer.parseInt(type.substring(3));
+						vecSize = Integer.parseInt(type.substring(3, 4));
 						tempuniflist.add(new Uniform(name, vecSize));
 					}else if (type.startsWith("mat")) {
-						vecSize = Integer.parseInt(type.substring(3));
+						vecSize = Integer.parseInt(type.substring(3, 4));
 						tempuniflist.add(new Uniform(name, vecSize, 2));
 					}else if (type.startsWith("int")) {
 						vecSize = 1;

@@ -254,6 +254,82 @@ public class VAO {
 		boundingBox = new Box3d(minX, minY, minZ, maxX, maxY, maxZ);
 	}
 	
+	public VAO(float minx, float miny, float minz, float maxx, float maxy, float maxz) {
+		float[] vertices = new float[] {
+				minx, miny, minz,// 0
+				minx, miny, maxz,// 1
+				maxx, miny, maxz,// 2
+				maxx, miny, minz,// 3
+				minx, maxy, minz,// 4
+				maxx, maxy, minz,// 5
+				
+				minx, miny, minz,// 6
+				minx, miny, maxz,// 7
+				minx, maxy, maxz,// 8
+				minx, maxy, minz,// 9
+				maxx, miny, maxz,// 10
+				maxx, maxy, maxz,// 11
+				
+				maxx, miny, minz,// 12
+				maxx, miny, maxz,// 13
+				maxx, maxy, maxz,// 14
+				maxx, maxy, minz,// 15
+				minx, maxy, minz,// 16
+				minx, maxy, maxz,// 17
+		};
+		float[] textureCoordinates = new float[] {
+				0.5f, 1f/3f,// 0
+				0f  , 1f/3f,// 1
+				0f  , 0f   ,// 2
+				0.5f, 0f   ,// 3
+				1f  , 1f/3f,// 4
+				1f  , 0f   ,// 5
+				
+				0f  , 1f/3f,// 6
+				0.5f, 1f/3f,// 7
+				0.5f, 2f/3f,// 8
+				0f  , 2f/3f,// 9
+				1f  , 1f/3f,// 10
+				1f  , 2f/3f,// 11
+				
+				0f  , 2f/3f,// 12
+				0f  , 1f   ,// 13
+				0.5f, 1f   ,// 14
+				0.5f, 2f/3f,// 15
+				1f  , 2f/3f,// 16
+				1f  , 1f   ,// 17
+		};
+		indices = new int[] {
+				0, 2, 1,
+				0, 3, 2,
+				4, 5, 0,
+				5, 3, 0,
+				
+				8, 6, 7,
+				9, 6, 8,
+				8, 10, 11,
+				8, 7, 10,
+				
+				15, 14, 13,
+				15, 13, 12,
+				17, 14, 15,
+				17, 15, 16,
+		};
+		boundingBox = new Box3d(minx, miny, minz, maxx, maxy, maxz);
+		vbos = new VBO[1];
+		id = glGenVertexArrays();
+		vaoIDs.add(id);
+		glBindVertexArray(id);
+		vbos[0] = new VBO(vertices, 3);
+		glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+		ibo = glGenBuffers();
+		VBO.vboIDs.add(ibo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
+		verticesPerShape = 3;
+		addVBO(new VBO(textureCoordinates, 2));
+	}
+	
 	/**
 	 * creates a vao (and vbos) from a obj file
 	 * @param path path to the file

@@ -1,0 +1,15 @@
+#version 330 core
+
+in vec2 texCoords;
+
+out vec4 color;
+
+uniform vec3 lightColor;
+
+float getBrightnessScale(float distance, float strengthSquared) {
+    return pow(2.718281828, -2 * distance / strengthSquared) - 0.0183156388887;
+}
+
+void main() {
+    color = vec4(lightColor, getBrightnessScale((texCoords.x - 0.5) * (texCoords.x - 0.5) + (texCoords.y - 0.5) * (texCoords.y - 0.5), 0.125));
+}

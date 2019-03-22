@@ -9,4 +9,7 @@ public enum BlockType {
 			return empty;
 		}
 	}
+	public boolean isSolid() {
+		return this.equals(block);
+	}
 }

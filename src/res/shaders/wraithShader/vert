@@ -3,7 +3,20 @@
 layout (location = 0) in vec3 vertices;
 
 uniform mat4 matrix;
+uniform float scale;
+
+out vec3 pos;
+
+float lengthSquared(vec3 a) {
+    return dot(a, a);
+}
 
 void main() {
-	gl_Position = matrix * vec4(vertices, 1);
+    vec3 deltaVector = vec3(-(vertices.x + 0.057), 0.58 - vertices.y, -vertices.z);
+    float dist = lengthSquared(deltaVector);
+    pos = vertices + (scale * pow(2.718281828, -4 * dist)) * deltaVector;
+	gl_Position = matrix * vec4(pos, 1);
+	//pos = vertices;
+	gl_Position.z *= 0.01;
 }
+//-0.057, 0.58

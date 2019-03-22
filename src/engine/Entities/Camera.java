@@ -17,9 +17,9 @@ public class Camera extends Vector3f {
 	
 	public boolean usingStaticRotation = true;
 	
-	private float pitch;
-	private float yaw;
-	private float roll;
+	protected float pitch;
+	protected float yaw;
+	protected float roll;
 	
 	public int[] orderOfTransformations = new int[] {0, 1, 2};//0 = projection matrix, 1 = rotation matrix, 2 = translation matrix;
 	

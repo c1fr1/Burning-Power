@@ -31,11 +31,17 @@ public class Main {
 		EnigWindow.runOpeningSequence = false;
 		EnigWindow window = new EnigWindow("Burning Power", "res/textures/icon.png");
 		source = new SoundSource();
-		Shaders.createMainShaders();
+		loadResources();
 		screenObj = new VAO(-1, -1, 2, 2);
 		window.fps = 60;
 		MainView.main = new MainView(window);
 		MainView.main.runLoop();
 		window.terminate();
+	}
+	
+	public static void loadResources() {
+		Map.loadResources();
+		Wraith.loadResources();
+		Shaders.createMainShaders();
 	}
 }

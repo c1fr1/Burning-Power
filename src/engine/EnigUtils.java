@@ -247,6 +247,24 @@ public class EnigUtils {
 		}
 		return ret;
 	}
+	
+	public static Matrix4f clearMatrix(Matrix4f mat, Matrix4f dest) {
+		float dist = mat.m00() * mat.m00() + mat.m01() * mat.m01() + mat.m02() * mat.m02();
+		dist = (float) Math.sqrt(dist);
+		return dest.set(dist, 0   , 0   , mat.m30(),
+					0   , dist    , 0   , mat.m31(),
+					0   , 0   , dist    , mat.m32(),
+					0   , 0   , 0  , 1);
+	}
+	
+	public static Matrix4f clearMatrix(Matrix4f mat) {
+		float dist = mat.m00() * mat.m00() + mat.m01() * mat.m01() + mat.m02() * mat.m02();
+		dist = (float) Math.sqrt(dist);
+		return mat.set(dist , 0   , 0   , mat.m30(),
+					0   , dist    , 0   , mat.m31(),
+					0   , 0   , dist    , mat.m32(),
+					0   , 0   , 0   , 1);
+	}
 }
 /*
 

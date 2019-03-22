@@ -12,7 +12,7 @@ uniform float[10] lightStrengths;
 uniform int numLights;
 
 float getBrightnessScale(vec2 offset, int i) {
-    return pow(2.718281828, -2 * dot(offset, offset) / (lightStrengths[i] * lightStrengths[i])) - 0.0183156388887;
+    return pow(2.718281828, -4 * dot(offset, offset) / (lightStrengths[i] * lightStrengths[i])) - 0.135335283237;
 }
 
 void main() {
@@ -21,7 +21,7 @@ void main() {
     for (int i = 0; i < numLights; ++i) {
         brightness += clamp(getBrightnessScale(verts.xz - lightPositions[i], i) * getBrightnessScale(playerPosition - lightPositions[i], i), 0, 1 - brightness);
     }
-    color.xyz *= brightness;
+    color *= brightness;
 }
 
 

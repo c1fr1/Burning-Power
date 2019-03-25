@@ -1,11 +1,9 @@
 #version 330 core
 
-in vec3 verts;
-in vec2 texCoords;
+in vec2 worldPosition;
 
 out vec4 color;
 
-uniform sampler2D texSampler;
 uniform float[10] playerProximity;
 uniform vec2[10] lightPositions;
 uniform float[10] lightStrengths;
@@ -24,9 +22,8 @@ float getBrightnessAt(vec2 position) {
 }
 
 void main() {
-    color = texture(texSampler, vec2(mod(texCoords.x + 0.5, 1), -mod(texCoords.y + 0.5, 1)));
-    float brightness = getBrightnessAt(verts.xz);
-    color.xyz *= brightness;
+    float grey = 3 * getBrightnessAt(worldPosition);
+    color = vec4(grey, grey, grey, 1);
 }
 
 

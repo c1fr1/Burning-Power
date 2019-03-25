@@ -6,35 +6,28 @@ stats (out of 5)
 ! needed for next product
 
 
->- Burst of light on wraith's surface where wraiths get hit.            |++++-          |
->- Wraiths drop light on death                                          |++++----!      ! 5
+ - Burst of light on wraith's surface where wraiths get hit.            |++++-          |
  - Completely organize the code                                         |+--            |
  - UI elements                                                          |CAT            |
->   = HP bar                                                            |----!          ! 1
->   = Light bar                                                         |----!          ! 6
     = Current weapon                                                    |+---           |
->- Menu screen                                                          |+----!         ! 4
->- a way to place lights                                                |+++---!        ! 7
+ - Tutorial                                                             |+--            |
+ - a way to place lights                                                |+++---!        !
  - redo rendering floor and lights                                      |---            |
->- sort non-opaque objects                                              |+++----!       ! 3
->- death                                                                |+----!         ! 2
->- loot                                                                 |CAT ++++--     | 8
+ - loot                                                                 |CAT ++++--     |
     = Weapons                                                           |CATT           |
-        + Spear                                                         |+++++--        |
+        + Spear                                                         |+++++---       |
     = Scrolls                                                           |CATT           |
         + Slab                                                          |+++++-----     |
         + Reign                                                         |+++++          |
         + Clab?                                                         |?              |
+ - wraiths attack lights                                                |+++---!        !
+ - variable player brightness                                           |+++-!          !
  */
  /*
 
-HP bar
-death
-sort non-opaque objects
-Menu screen
-wraiths drop light on death
-light bar
 place lights
+wraiths attack lights
+variable player brightness
 loot boxes
 light burst on surface
 redo floor

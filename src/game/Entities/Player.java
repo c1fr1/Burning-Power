@@ -1,7 +1,10 @@
-package game;
+package game.Entities;
 
 import engine.Entities.Camera;
 import engine.OpenGL.EnigWindow;
+import game.UserControls;
+import game.map.BlockType;
+import game.map.Map;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 
@@ -11,6 +14,8 @@ import static org.joml.Math.sin;
 
 public class Player extends Camera {
 	public float hp = 1;
+	public float light = 1.000001f;
+	public float attackTimer = 0f;
 	
 	public Player(EnigWindow window) {
 		super((float) PI * 0.25f, 0.01f, 1000f, window);
@@ -131,8 +136,8 @@ public class Player extends Camera {
 	}
 	
 	public void setPlayerLight(Map map) {
-		map.lights[0].x = x;
-		map.lights[0].y = z;
+		map.lamps[0].x = x;
+		map.lamps[0].y = z;
 	}
 	
 	public void updateRotation(EnigWindow window) {

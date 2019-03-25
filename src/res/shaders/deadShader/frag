@@ -1,6 +1,7 @@
 #version 330 core
 
 uniform sampler2D textureSampler;
+uniform float darkness;
 
 in vec2 texCoords;
 
@@ -8,5 +9,6 @@ out vec4 color;
 
 void main() {
     color = texture(textureSampler, vec2(texCoords.x, 1-texCoords.y));
+    color.xyz *= darkness;
     color.w = 1;
 }

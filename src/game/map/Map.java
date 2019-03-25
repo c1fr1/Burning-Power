@@ -1,17 +1,16 @@
-package game;
+package game.map;
 
 import engine.Entities.Camera;
 import engine.OpenGL.Texture;
 import engine.OpenGL.VAO;
+import game.Entities.Player;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
-import static game.MainView.lightSquare;
 import static game.Shaders.floorShader;
-import static game.Shaders.lightShader;
 import static game.Shaders.wallShader;
 
 public class Map {
@@ -22,14 +21,22 @@ public class Map {
 	public static Texture tile;
 	
 	public ArrayList<Block> blocks;
-	public float[] lightStrengths;
-	public Vector2f[] lights;
-	public int numLights = 3;
+	public float[] lampStrengths;
+	public Vector2f[] lamps;
+	public LampLight[] lampParticles;
+	public int numLamps = 3;
+	
+	public float[] playerDistances;
 	
 	public Map() {
 		blocks = new ArrayList<>();
-		lightStrengths = new float[] {1f, 15f, 15f, 0f, 0f, 0f, 0f, 0f, 0f, 0f};
-		lights = new Vector2f[] {new Vector2f(0f, 0f), new Vector2f(0f, -10f), new Vector2f(0f, 0f), new Vector2f(0f, 0f), new Vector2f(0f, 0f), new Vector2f(0f, 0f), new Vector2f(0f, 0f), new Vector2f(0f, 0f), new Vector2f(0f, 0f), new Vector2f(0f, 0f)};
+		lampStrengths = new float[] {1f, 15f, 15f, 0f, 0f, 0f, 0f, 0f, 0f, 0f};
+		lamps = new Vector2f[] {new Vector2f(0f, 0f), new Vector2f(0f, -10f), new Vector2f(0f, 0f), new Vector2f(0f, 0f), new Vector2f(0f, 0f), new Vector2f(0f, 0f), new Vector2f(0f, 0f), new Vector2f(0f, 0f), new Vector2f(0f, 0f), new Vector2f(0f, 0f)};
+		lampParticles = new LampLight[9];
+		lampParticles[0] = new LampLight(lamps[1]);
+		lampParticles[1] = new LampLight(lamps[2]);
+		playerDistances = new float[10];
+		playerDistances[0] = 1;
 	}
 	
 	public void render(Player playerCamera) {
@@ -40,13 +47,18 @@ public class Map {
 	}
 	
 	public void renderFloor(Camera playerCamera, Matrix4f mat) {
+		
+		for (int i = 1; i < numLamps; ++i) {
+			playerDistances[i] = getBrightness(playerCamera.x, playerCamera.z, i);
+		}
+		
 		floorShader.enable();
 		tile.bind();
 		floorShader.setUniform(0, 0, mat);
-		floorShader.setUniform(2, 0, new Vector2f(playerCamera.x, playerCamera.z));
-		floorShader.setUniform(2, 1, lights);
-		floorShader.setUniform(2, 2, lightStrengths);
-		floorShader.setUniform(2, 3, numLights);
+		floorShader.setUniform(2, 0, playerDistances);
+		floorShader.setUniform(2, 1, lamps);
+		floorShader.setUniform(2, 2, lampStrengths);
+		floorShader.setUniform(2, 3, numLamps);
 		floorPlane.fullRender();
 	}
 	
@@ -66,22 +78,11 @@ public class Map {
 	
 	public void renderLamps(Player player, Matrix4f mat) {
 		lamp.prepareRender();
-		for (int i = 1; i < numLights; ++i) {
-			wallShader.setUniform(0, 0, mat.translate(lights[i].x, 0f, lights[i].y, new Matrix4f()));
+		for (int i = 1; i < numLamps; ++i) {
+			wallShader.setUniform(0, 0, mat.translate(lamps[i].x, 0f, lamps[i].y, new Matrix4f()));
 			lamp.drawTriangles();
 		}
 		lamp.unbind();
-		
-		lightShader.enable();
-		lightSquare.prepareRender();
-		lightShader.setUniform(2, 0, 1f, 1f, 1f);
-		lightShader.setUniform(0, 1, 0.001f);
-		for (int i = 1; i < numLights; ++i) {
-			lightShader.setUniform(0, 0, player.reverseRotations(new Matrix4f(mat).translate(lights[i].x, 5.3f, lights[i].y).scale(2f)));
-			lightSquare.drawTriangles();
-		}
-		lightSquare.unbind();
-		
 	}
 	
 	public int getIndex(int x, int y) {
@@ -441,10 +442,23 @@ public class Map {
 		float y = (float) by;
 		float dx;
 		float dy;
-		for (int i = 1; i < numLights; ++i) {
-			dx = x - lights[i].x;
-			dy = y - lights[i].y;
-			if (dx * dx + dy * dy < lightStrengths[i] * lightStrengths[i] + 2f + 1.5f * lightStrengths[i]) {
+		for (int i = 1; i < numLamps; ++i) {
+			dx = x - lamps[i].x;
+			dy = y - lamps[i].y;
+			if (dx * dx + dy * dy < lampStrengths[i] * lampStrengths[i] + 2f + 1.5f * lampStrengths[i]) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isInlightened(float x, float y) {
+		float dx;
+		float dy;
+		for (int i = 1; i < numLamps; ++i) {
+			dx = x - lamps[i].x;
+			dy = y - lamps[i].y;
+			if (dx * dx + dy * dy < lampStrengths[i] * lampStrengths[i] + 2f + 1.5f * lampStrengths[i]) {
 				return true;
 			}
 		}
@@ -454,9 +468,9 @@ public class Map {
 	public float getPlayerBasedBrightness(Vector3f pos, float x, float z) {
 		float ret = 0;
 		float dist;
-		for (int i = 0; i < numLights; ++i) {
-			dist = (float) Math.pow(Math.E, -2 * lights[i].distanceSquared(x, z) / (lightStrengths[i] * lightStrengths[i])) - 0.135335283237f;
-			dist *= (float) Math.pow(Math.E, -2 * lights[i].distanceSquared(pos.x, pos.z) / (lightStrengths[i] * lightStrengths[i])) - 0.135335283237f;
+		for (int i = 0; i < numLamps; ++i) {
+			dist = (float) Math.pow(Math.E, -2 * lamps[i].distanceSquared(x, z) / (lampStrengths[i] * lampStrengths[i])) - 0.135335283237f;
+			dist *= (float) Math.pow(Math.E, -2 * lamps[i].distanceSquared(pos.x, pos.z) / (lampStrengths[i] * lampStrengths[i])) - 0.135335283237f;
 			if (dist > ret) {
 				ret = dist;
 			}
@@ -467,8 +481,8 @@ public class Map {
 	public float getBrightness(float x, float z) {
 		float ret = 0;
 		float dist;
-		for (int i = 0; i < numLights; ++i) {
-			dist = (float) Math.pow(Math.E, -2 * lights[i].distanceSquared(x, z) / (lightStrengths[i] * lightStrengths[i])) - 0.135335283237f;
+		for (int i = 0; i < numLamps; ++i) {
+			dist = (float) Math.pow(Math.E, -2 * lamps[i].distanceSquared(x, z) / (lampStrengths[i] * lampStrengths[i])) - 0.135335283237f;
 			if (dist > ret) {
 				ret = dist;
 			}
@@ -476,11 +490,15 @@ public class Map {
 		return ret;
 	}
 	
+	public float getBrightness(float x, float z, int i) {
+		return (float) Math.pow(Math.E, -2 * lamps[i].distanceSquared(x, z) / (lampStrengths[i] * lampStrengths[i])) - 0.135335283237f;
+	}
+	
 	public float closestLightDistanceSquared(float x, float z) {
 		float ret = Float.POSITIVE_INFINITY;
 		float dist;
-		for (int i = 0; i < numLights; ++i) {
-			dist = lights[i].distanceSquared(x, z);
+		for (int i = 0; i < numLamps; ++i) {
+			dist = lamps[i].distanceSquared(x, z);
 			if (dist < ret) {
 				ret = dist;
 			}

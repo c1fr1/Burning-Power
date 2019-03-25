@@ -1,4 +1,4 @@
-package game;
+package game.map;
 
 public enum BlockType {
 	block, empty, unknown;

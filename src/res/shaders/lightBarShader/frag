@@ -1,0 +1,16 @@
+#version 330 core
+
+uniform sampler2D textureSampler;
+
+in vec2 texCoords;
+
+out vec4 color;
+
+uniform float light;
+
+void main() {
+    color = vec4(0, 0, 0, 1);
+    if (texCoords.x < light) {
+        color = vec4(1, 1, 1, 1);
+    }
+}

@@ -28,6 +28,15 @@ public class FBO {
 		bindTexture(tex);
 	}
 	
+	public FBO(int width, int height) {
+		id = glGenFramebuffers();
+		fboIDs.add(id);
+		glBindFramebuffer(GL_FRAMEBUFFER, id);
+		glDrawBuffer(GL_COLOR_ATTACHMENT0);
+		
+		bindTexture(new Texture(width, height));
+	}
+	
 	/**
 	 * binds the texture to the
 	 * @param tex

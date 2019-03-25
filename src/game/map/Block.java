@@ -1,4 +1,4 @@
-package game;
+package game.map;
 
 public class Block {
 	public BlockType type;

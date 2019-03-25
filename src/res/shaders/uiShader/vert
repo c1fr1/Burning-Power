@@ -1,0 +1,15 @@
+#version 330 core
+
+layout (location = 0) in vec3 vertices;
+layout (location = 1) in vec2 txtPos;
+
+out vec2 texCoords;
+out vec2 fragmentPosition;
+
+uniform mat4 mat;
+
+void main() {
+	gl_Position = mat * vec4(vertices, 1);
+    fragmentPosition = vec2(gl_Position.x, gl_Position.y);
+	texCoords = txtPos;
+}

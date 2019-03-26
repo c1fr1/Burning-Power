@@ -20,12 +20,17 @@ stats (out of 5)
         + Slab                                                          |+++++-----     |
         + Reign                                                         |+++++          |
         + Clab?                                                         |?              |
+        + Shield                                                        |++++-          |
+ - sound                                                                |CAT            |
+    = port old wraith noises                                            |+++--          |
+    = add new sounds for new attack(s)                                  |+--            |
+    = find someone to do music or do something else                     |---            |
  */
  /*
 
 place lights
 loot boxes
-light burst on surface
+light burst on surface/redo model
 redo floor
 spear
 slab

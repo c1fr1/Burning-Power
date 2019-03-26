@@ -1,10 +1,12 @@
 package game.map;
 
-import game.Entities.Particle;
+import game.entities.Particle;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class LampLight extends Particle {
+	
+	public float hp = 1;
 	
 	public LampLight(Vector2f position) {
 		x = position.x;
@@ -13,7 +15,7 @@ public class LampLight extends Particle {
 	}
 	
 	public Vector3f getColor() {
-		return new Vector3f(1f, 1f, 1f);
+		return new Vector3f(1f * hp, 1f * hp, 1f * hp * 2f);
 	}
 	
 	public float getSize() {

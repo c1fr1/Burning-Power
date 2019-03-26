@@ -1,4 +1,4 @@
-package game.Entities;
+package game.entities;
 
 import engine.OpenGL.VAO;
 import game.Views.MainView;
@@ -22,6 +22,8 @@ public class Wraith extends Particle {
 	public float perlinTime = 0;
 	public float hp = 1;
 	public float vhp = 1;
+	
+	public Vector3f target;
 	
 	public Wraith(float x, float y) {
 		this.x = x;
@@ -48,16 +50,36 @@ public class Wraith extends Particle {
 		model.unbind();
 	}
 	
-	public void manage(Player player) {
-		float dx = player.x - x;
-		float dy = player.z - z;
+	public void manage(Vector3f player, Map m) {
+		findTarget(player, m);
+		attackTarget();
+		updateHP(m);
+	}
+	
+	public void findTarget(Vector3f player, Map m) {
+		if (attackTimer <= 0) {
+			target = player;
+			float dsqr = distanceSquared(player);
+			float other;
+			for (int i = 0; i < m.numLamps - 1; ++i) {
+				other = distanceSquared(m.lampParticles[i]);
+				if (other < dsqr) {
+					target = m.lampParticles[i];
+					dsqr = other;
+				}
+			}
+		}
+	}
+	
+	public void attackTarget() {
+		float dx = target.x - x;
+		float dy = target.z - z;
 		face(dx, dy);
 		if (dx * dx + dy * dy < 9 || attackTimer > 0) {
 			attackTimer += 0.01;
 		} else {
 			moveForward();
 		}
-		updateHP();
 	}
 	
 	public void face(float dx, float dy) {
@@ -89,8 +111,8 @@ public class Wraith extends Particle {
 		this.z += -sin(rotation) * 0.008f;
 	}
 	
-	public void updateHP() {
-		hp += 0.002;
+	public void updateHP(Map map) {
+		hp += 0.003 * (1 - map.getBrightness(this.x, this.z));
 		if (hp > 1) {
 			hp = 1;
 		}
@@ -100,7 +122,7 @@ public class Wraith extends Particle {
 	
 	public static void manageSet(ArrayList<Wraith> wraiths, Player player, Map map) {
 		for (int i = 0; i < wraiths.size(); ++i) {
-			wraiths.get(i).manage(player);
+			wraiths.get(i).manage(player, map);
 			if (wraiths.get(i).vhp < 0) {
 				for (int j = 0; j < 1 + Math.random() * 5; ++j) {
 					MainView.main.drops.add(new LightDrop(wraiths.get(i)));

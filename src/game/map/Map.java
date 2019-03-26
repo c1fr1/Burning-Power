@@ -3,7 +3,7 @@ package game.map;
 import engine.Entities.Camera;
 import engine.OpenGL.Texture;
 import engine.OpenGL.VAO;
-import game.Entities.Player;
+import game.entities.Player;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -30,13 +30,191 @@ public class Map {
 	
 	public Map() {
 		blocks = new ArrayList<>();
-		lampStrengths = new float[] {1f, 15f, 15f, 0f, 0f, 0f, 0f, 0f, 0f, 0f};
+		lampStrengths = new float[] {5f, 15f, 15f, 0f, 0f, 0f, 0f, 0f, 0f, 0f};
 		lamps = new Vector2f[] {new Vector2f(0f, 0f), new Vector2f(0f, -10f), new Vector2f(0f, 0f), new Vector2f(0f, 0f), new Vector2f(0f, 0f), new Vector2f(0f, 0f), new Vector2f(0f, 0f), new Vector2f(0f, 0f), new Vector2f(0f, 0f), new Vector2f(0f, 0f)};
 		lampParticles = new LampLight[9];
 		lampParticles[0] = new LampLight(lamps[1]);
 		lampParticles[1] = new LampLight(lamps[2]);
 		playerDistances = new float[10];
 		playerDistances[0] = 1;
+	}
+	
+	public void generateXSet(int minX, int maxX, int y) {
+		for (int i = minX; i <= maxX; ++i) {
+			if (getIndex(i, y) == -1) {
+				generateBlockAt(i, y);
+			}
+		}
+	}
+	
+	public void generateYSet(int x, int minY, int maxY) {
+		for (int i = minY; i <= maxY; ++i) {
+			if (getIndex(x, i) == -1) {
+				generateBlockAt(x, i);
+			}
+		}
+	}
+	
+	public void removeXSet(int minX, int maxX, int y) {
+		for (int i = minX; i <= maxX; ++i) {
+			if (!isInlightened(i, y)) {
+				int index = getIndex(i, y);
+				if (index >= 0) {
+					blocks.remove(index);
+				}
+			}
+		}
+	}
+	
+	public void removeYSet(int x, int minY, int maxY) {
+		for (int i = minY; i <= maxY; ++i) {
+			if (!isInlightened(x, i)) {
+				int index = getIndex(x, i);
+				if (index >= 0) {
+					blocks.remove(index);
+				}
+			}
+		}
+	}
+	
+	public void manage(Vector3f player, Vector2f offset) {
+		int px = (int) Math.round(player.x);
+		int py = (int) Math.round(player.z);
+		
+		int ri = Math.round(lampStrengths[0]);
+		
+		removeXSet(px - ri - 2, px + ri + 1,py + ri + 2);
+		removeXSet(px - ri - 1, px + ri + 2,py - ri - 2);
+		removeYSet(px + ri + 2, py - ri - 2,py + ri + 1);
+		removeYSet(px - ri - 2, py - ri - 1,py + ri + 2);
+		
+		
+		generateXSet(px - ri - 1, px + ri,py + ri + 1);
+		generateXSet(px - ri, px + ri + 1,py - ri - 1);
+		generateYSet(px + ri + 1, py - ri - 1,py + ri);
+		generateYSet(px - ri - 1, py - ri,py + ri + 1);
+		
+		/*if (offset.x > 0) {
+			if (offset.y > 0) {//Q1
+				for (int i = -2; i < 3; ++i) {
+					if (!isInlightened(px + i, py - 2)) {
+						int idx = getIndex(px + i, py - 2);
+						if (idx >= 0) {
+							blocks.remove(idx);
+						}
+					}
+				}
+				for (int i = -1; i < 3; ++i) {
+					if (!isInlightened(px - 2, py + i)) {
+						int idx = getIndex(px - 2, py + i);
+						if (idx >= 0) {
+							blocks.remove(idx);
+						}
+					}
+				}
+				for (int i = -1; i < 3; ++i) {
+					int idx = getIndex(px + i, py + 2);
+					if (idx == -1) {
+						generateBlockAt(px + i, py + 2);
+					}
+				}
+				for (int i = -1; i < 2; ++i) {
+					int idx = getIndex(px + 2, py + i);
+					if (idx == -1) {
+						generateBlockAt(px + 2, py + i);
+					}
+				}
+			} else {//Q4
+				for (int i = -1; i < 3; ++i) {
+					if (!isInlightened(px + i, py + 2)) {
+						int idx = getIndex(px + i, py + 2);
+						if (idx >= 0) {
+							blocks.remove(idx);
+						}
+					}
+				}
+				for (int i = -2; i < 3; ++i) {
+					if (!isInlightened(px - 2, py + i)) {
+						int idx = getIndex(px - 2, py + i);
+						if (idx >= 0) {
+							blocks.remove(idx);
+						}
+					}
+				}
+				for (int i = -1; i < 3; ++i) {
+					int idx = getIndex(px + i, py - 2);
+					if (idx == -1) {
+						generateBlockAt(px + i, py - 2);
+					}
+				}
+				for (int i = -1; i < 2; ++i) {
+					int idx = getIndex(px + 2, py + i);
+					if (idx == -1) {
+						generateBlockAt(px + 2, py + i);
+					}
+				}
+			}
+		} else {
+			if (offset.y > 0) {//Q2
+				for (int i = -2; i < 3; ++i) {
+					if (!isInlightened(px + i, py - 2)) {
+						int idx = getIndex(px + i, py - 2);
+						if (idx >= 0) {
+							blocks.remove(idx);
+						}
+					}
+				}
+				for (int i = -1; i < 3; ++i) {
+					if (!isInlightened(px + 2, py + i)) {
+						int idx = getIndex(px + 2, py + i);
+						if (idx >= 0) {
+							blocks.remove(idx);
+						}
+					}
+				}
+				for (int i = -2; i < 2; ++i) {
+					int idx = getIndex(px + i, py + 2);
+					if (idx == -1) {
+						generateBlockAt(px + i, py + 2);
+					}
+				}
+				for (int i = -1; i < 2; ++i) {
+					int idx = getIndex(px - 2, py + i);
+					if (idx == -1) {
+						generateBlockAt(px - 2, py + i);
+					}
+				}
+			} else {//Q3
+				for (int i = -2; i < 3; ++i) {
+					if (!isInlightened(px + i, py + 2)) {
+						int idx = getIndex(px + i, py + 2);
+						if (idx >= 0) {
+							blocks.remove(idx);
+						}
+					}
+				}
+				for (int i = -2; i < 2; ++i) {
+					if (!isInlightened(px + 2, py + i)) {
+						int idx = getIndex(px + 2, py + i);
+						if (idx >= 0) {
+							blocks.remove(idx);
+						}
+					}
+				}
+				for (int i = -2; i < 2; ++i) {
+					int idx = getIndex(px + i, py - 2);
+					if (idx == -1) {
+						generateBlockAt(px + i, py - 2);
+					}
+				}
+				for (int i = -1; i < 2; ++i) {
+					int idx = getIndex(px - 2, py + i);
+					if (idx == -1) {
+						generateBlockAt(px - 2, py + i);
+					}
+				}
+			}
+		}*/
 	}
 	
 	public void render(Player playerCamera) {
@@ -311,132 +489,6 @@ public class Map {
 		return false;
 	}
 	
-	public void manage(Vector3f player, Vector2f offset) {
-		int px = (int) Math.round(player.x);
-		int py = (int) Math.round(player.z);
-		if (offset.x > 0) {
-			if (offset.y > 0) {//Q1
-				for (int i = -2; i < 3; ++i) {
-					if (!isInlightened(px + i, py - 2)) {
-						int idx = getIndex(px + i, py - 2);
-						if (idx >= 0) {
-							blocks.remove(idx);
-						}
-					}
-				}
-				for (int i = -1; i < 3; ++i) {
-					if (!isInlightened(px - 2, py + i)) {
-						int idx = getIndex(px - 2, py + i);
-						if (idx >= 0) {
-							blocks.remove(idx);
-						}
-					}
-				}
-				for (int i = -1; i < 3; ++i) {
-					int idx = getIndex(px + i, py + 2);
-					if (idx == -1) {
-						generateBlockAt(px + i, py + 2);
-					}
-				}
-				for (int i = -1; i < 2; ++i) {
-					int idx = getIndex(px + 2, py + i);
-					if (idx == -1) {
-						generateBlockAt(px + 2, py + i);
-					}
-				}
-			} else {//Q4
-				for (int i = -1; i < 3; ++i) {
-					if (!isInlightened(px + i, py + 2)) {
-						int idx = getIndex(px + i, py + 2);
-						if (idx >= 0) {
-							blocks.remove(idx);
-						}
-					}
-				}
-				for (int i = -2; i < 3; ++i) {
-					if (!isInlightened(px - 2, py + i)) {
-						int idx = getIndex(px - 2, py + i);
-						if (idx >= 0) {
-							blocks.remove(idx);
-						}
-					}
-				}
-				for (int i = -1; i < 3; ++i) {
-					int idx = getIndex(px + i, py - 2);
-					if (idx == -1) {
-						generateBlockAt(px + i, py - 2);
-					}
-				}
-				for (int i = -1; i < 2; ++i) {
-					int idx = getIndex(px + 2, py + i);
-					if (idx == -1) {
-						generateBlockAt(px + 2, py + i);
-					}
-				}
-			}
-		} else {
-			if (offset.y > 0) {//Q2
-				for (int i = -2; i < 3; ++i) {
-					if (!isInlightened(px + i, py - 2)) {
-						int idx = getIndex(px + i, py - 2);
-						if (idx >= 0) {
-							blocks.remove(idx);
-						}
-					}
-				}
-				for (int i = -1; i < 3; ++i) {
-					if (!isInlightened(px + 2, py + i)) {
-						int idx = getIndex(px + 2, py + i);
-						if (idx >= 0) {
-							blocks.remove(idx);
-						}
-					}
-				}
-				for (int i = -2; i < 2; ++i) {
-					int idx = getIndex(px + i, py + 2);
-					if (idx == -1) {
-						generateBlockAt(px + i, py + 2);
-					}
-				}
-				for (int i = -1; i < 2; ++i) {
-					int idx = getIndex(px - 2, py + i);
-					if (idx == -1) {
-						generateBlockAt(px - 2, py + i);
-					}
-				}
-			} else {//Q3
-				for (int i = -2; i < 3; ++i) {
-					if (!isInlightened(px + i, py + 2)) {
-						int idx = getIndex(px + i, py + 2);
-						if (idx >= 0) {
-							blocks.remove(idx);
-						}
-					}
-				}
-				for (int i = -2; i < 2; ++i) {
-					if (!isInlightened(px + 2, py + i)) {
-						int idx = getIndex(px + 2, py + i);
-						if (idx >= 0) {
-							blocks.remove(idx);
-						}
-					}
-				}
-				for (int i = -2; i < 2; ++i) {
-					int idx = getIndex(px + i, py - 2);
-					if (idx == -1) {
-						generateBlockAt(px + i, py - 2);
-					}
-				}
-				for (int i = -1; i < 2; ++i) {
-					int idx = getIndex(px - 2, py + i);
-					if (idx == -1) {
-						generateBlockAt(px - 2, py + i);
-					}
-				}
-			}
-		}
-	}
-	
 	public boolean isInlightened(int bx, int by) {
 		float x = (float) bx;
 		float y = (float) by;
@@ -508,6 +560,17 @@ public class Map {
 	
 	public float closestLightDistance(float x, float z) {
 		return (float) Math.sqrt(closestLightDistanceSquared(x, z));
+	}
+	
+	public void removeLight(int index) {
+		for (int i = index; i < numLamps; ++i) {
+			if (i < lamps.length) {
+				lampStrengths[i] = lampStrengths[i + 1];
+				lamps[i] = lamps[i + 1];
+				lampParticles[i] = lampParticles[i + 1];
+			}
+		}
+		--numLamps;
 	}
 	
 	public static void loadResources() {

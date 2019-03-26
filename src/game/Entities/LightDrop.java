@@ -1,9 +1,8 @@
-package game.Entities;
+package game.entities;
 
 import engine.OpenGL.VAO;
 import game.map.Map;
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -68,13 +67,15 @@ public class LightDrop extends Vector3f {
 	
 	public boolean manage(Player player) {
 		float dsqr = distanceSquared(player);
-		if (dsqr < 0.5f) {
+		if (dsqr < 0.25f) {
 			return true;
 		}
 		if (dsqr < 2) {
 			Vector3f delta = player.sub(this, new Vector3f());
 			delta.normalize(0.01f/dsqr);
+			delta.y *= 0.25f;
 			add(delta);
+			yvel = 0;
 		}
 		yvel -= 0.001f;
 		y += yvel;

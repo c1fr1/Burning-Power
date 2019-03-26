@@ -1,4 +1,4 @@
-package game.Entities;
+package game.entities;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -31,8 +31,11 @@ public class Projectile extends Particle {
 		this.y = 1.1f;
 		this.z = wraith.z;
 		color = new Vector3f(0f, 0f, 1f);
-		direction = new Vector3f((float) Math.cos(wraith.rotation), -0.2f, (float) -Math.sin(wraith.rotation));
+		direction = wraith.target.sub(wraith, new Vector3f());
 		direction.normalize();
+		float length = (float) Math.sqrt(direction.x * direction.x + direction.z * direction.z);
+		direction.x = (float) Math.cos(wraith.rotation) * length;
+		direction.z = (float) -Math.sin(wraith.rotation) * length;
 	}
 	
 	public static void renderSet(ArrayList<Projectile> projectiles, Player player, float r, float g, float b) {

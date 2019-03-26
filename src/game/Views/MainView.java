@@ -3,7 +3,7 @@ package game.Views;
 import engine.*;
 import engine.OpenGL.*;
 import game.*;
-import game.Entities.*;
+import game.entities.*;
 import game.map.Block;
 import game.map.BlockType;
 import game.map.Map;
@@ -52,7 +52,6 @@ public class MainView extends EnigView {
 		playerProjectiles = new ArrayList<>();
 		wraithProjectiles = new ArrayList<>();
 		drops = new ArrayList<>();
-		drops.add(new LightDrop());
 		wraiths = new ArrayList<>();
 		wraiths.add(new Wraith(5, 0));
 		
@@ -178,7 +177,7 @@ public class MainView extends EnigView {
 		for (int i = 0; i < playerProjectiles.size(); ++i) {
 			proj = playerProjectiles.get(i);
 			
-			proj.move(5 * deltaTime);
+			proj.move(0.08f);
 			
 			float brightness = map.getPlayerBasedBrightness(player, proj.x, proj.z);
 			brightness = 1 - (1 - brightness) * (1 - brightness);
@@ -219,12 +218,12 @@ public class MainView extends EnigView {
 		for (int i = 0; i < wraithProjectiles.size(); ++i) {
 			proj = wraithProjectiles.get(i);
 			
-			proj.move(5 * deltaTime);
+			proj.move(0.08f);
 			
 			float brightness = map.getPlayerBasedBrightness(player, proj.x, proj.z);
 			brightness = 1 - (1 - brightness) * (1 - brightness);
 			if (brightness < 0.87) {
-				proj.brightness -= 0.01f * (brightness + 0.87);
+				proj.brightness -= 0.005f * (brightness + 0.87);
 			}
 			
 			if (proj.brightness < 0 ||
@@ -236,12 +235,25 @@ public class MainView extends EnigView {
 				continue;
 			}
 			
-			if (proj.distanceSquared(player) < 0.25f) {
+			if (proj.distanceSquared(player) < 0.20f) {
 				player.hp -= 0.05f;
 				
 				wraithProjectiles.remove(i);
 				--i;
 				continue;
+			}
+			for (int j = 0; j < map.numLamps - 1; ++j) {
+				if (proj.distanceSquared(map.lampParticles[j]) < 0.2f) {
+					map.lampParticles[j].hp -= 0.100001f;
+					
+					if (map.lampParticles[j].hp <= 0) {
+						map.removeLight(j + 1);
+					}
+					
+					wraithProjectiles.remove(i);
+					--i;
+					break;
+				}
 			}
 		}
 	}

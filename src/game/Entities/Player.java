@@ -1,4 +1,4 @@
-package game.Entities;
+package game.entities;
 
 import engine.Entities.Camera;
 import engine.OpenGL.EnigWindow;

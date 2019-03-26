@@ -21,7 +21,7 @@ public class Player extends Camera {
 		super((float) PI * 0.25f, 0.01f, 1000f, window);
 	}
 	
-	public Vector2f manage(EnigWindow window, Map map) {
+	public void manage(EnigWindow window, Map map) {
 		updateRotation(window);
 		
 		Vector2f offset = getMovementOffset(window);
@@ -34,9 +34,17 @@ public class Player extends Camera {
 			translate(offset.x, 0f, offset.y);
 			
 			setPlayerLight(map);
-			map.manage(this, offset);
+			map.manage(this);
 		}
-		return offset;
+		
+		if (UserControls.placeLamp(window)) {
+			if (light > 0.5f) {
+				if (map.numLamps < 10) {
+					map.generateLamp(x, z);
+					light -= 0.4999999f;
+				}
+			}
+		}
 	}
 	
 	public Vector2f getMovementOffset(EnigWindow window) {

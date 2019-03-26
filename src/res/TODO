@@ -11,7 +11,6 @@ stats (out of 5)
  - UI elements                                                          |CAT            |
     = Current weapon                                                    |+---           |
  - Tutorial                                                             |+--            |
- - a way to place lights                                                |+++---!        !
  - redo rendering floor and lights                                      |---            |
  - loot                                                                 |CAT ++++--     |
     = Weapons                                                           |CATT           |
@@ -19,7 +18,7 @@ stats (out of 5)
     = Scrolls                                                           |CATT           |
         + Slab                                                          |+++++-----     |
         + Reign                                                         |+++++          |
-        + Clab?                                                         |?              |
+        + Club                                                          |+++----        |
         + Shield                                                        |++++-          |
  - sound                                                                |CAT            |
     = port old wraith noises                                            |+++--          |
@@ -28,7 +27,6 @@ stats (out of 5)
  */
  /*
 
-place lights
 loot boxes
 light burst on surface/redo model
 redo floor

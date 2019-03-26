@@ -6,7 +6,7 @@ import org.joml.Vector3f;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import static game.Views.MainView.lightSquare;
+import static game.views.MainView.lightSquare;
 import static game.Shaders.lightShader;
 
 public abstract class Particle extends Vector3f {

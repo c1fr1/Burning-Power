@@ -5,9 +5,9 @@ import engine.OpenGL.EnigWindow;
 import engine.OpenGL.VAO;
 import game.entities.LightDrop;
 import game.entities.Wraith;
-import game.Views.GameOverView;
-import game.Views.MainMenuView;
-import game.Views.MainView;
+import game.views.GameOverView;
+import game.views.MainMenuView;
+import game.views.MainView;
 import game.map.Map;
 import org.joml.Matrix4f;
 

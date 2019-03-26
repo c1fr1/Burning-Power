@@ -1,7 +1,7 @@
 package game.entities;
 
 import engine.OpenGL.VAO;
-import game.Views.MainView;
+import game.views.MainView;
 import game.map.Map;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;

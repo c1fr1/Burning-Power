@@ -1,4 +1,4 @@
-package game.Views;
+package game.views;
 
 import engine.*;
 import engine.OpenGL.*;

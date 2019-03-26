@@ -1,17 +1,16 @@
-package game.Views;
+package game.views;
 
 import engine.EnigView;
 import engine.OpenGL.EnigWindow;
 import engine.OpenGL.FBO;
 import engine.OpenGL.Texture;
-import engine.OpenGL.VAO;
 import game.Main;
 import game.UserControls;
 import org.joml.Matrix4f;
 
 import static game.Shaders.deadShader;
-import static game.Shaders.flipShader;
 import static game.Shaders.uiShader;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_R;
 
 public class GameOverView extends EnigView {
 	
@@ -45,7 +44,7 @@ public class GameOverView extends EnigView {
 		Main.screenObj.fullRender();
 		
 		
-		if (UserControls.quit(window)) {
+		if (UserControls.quit(window) || window.keys[GLFW_KEY_R] == 1) {
 			return true;
 		}
 		return false;

@@ -6,7 +6,7 @@ import org.joml.Vector4f;
 
 import java.util.ArrayList;
 
-import static game.Views.MainView.lightSquare;
+import static game.views.MainView.lightSquare;
 import static game.Shaders.lightShader;
 
 public class Projectile extends Particle {

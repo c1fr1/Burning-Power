@@ -77,7 +77,7 @@ public class Map {
 		}
 	}
 	
-	public void manage(Vector3f player, Vector2f offset) {
+	public void manage(Vector3f player) {
 		int px = (int) Math.round(player.x);
 		int py = (int) Math.round(player.z);
 		
@@ -93,128 +93,6 @@ public class Map {
 		generateXSet(px - ri, px + ri + 1,py - ri - 1);
 		generateYSet(px + ri + 1, py - ri - 1,py + ri);
 		generateYSet(px - ri - 1, py - ri,py + ri + 1);
-		
-		/*if (offset.x > 0) {
-			if (offset.y > 0) {//Q1
-				for (int i = -2; i < 3; ++i) {
-					if (!isInlightened(px + i, py - 2)) {
-						int idx = getIndex(px + i, py - 2);
-						if (idx >= 0) {
-							blocks.remove(idx);
-						}
-					}
-				}
-				for (int i = -1; i < 3; ++i) {
-					if (!isInlightened(px - 2, py + i)) {
-						int idx = getIndex(px - 2, py + i);
-						if (idx >= 0) {
-							blocks.remove(idx);
-						}
-					}
-				}
-				for (int i = -1; i < 3; ++i) {
-					int idx = getIndex(px + i, py + 2);
-					if (idx == -1) {
-						generateBlockAt(px + i, py + 2);
-					}
-				}
-				for (int i = -1; i < 2; ++i) {
-					int idx = getIndex(px + 2, py + i);
-					if (idx == -1) {
-						generateBlockAt(px + 2, py + i);
-					}
-				}
-			} else {//Q4
-				for (int i = -1; i < 3; ++i) {
-					if (!isInlightened(px + i, py + 2)) {
-						int idx = getIndex(px + i, py + 2);
-						if (idx >= 0) {
-							blocks.remove(idx);
-						}
-					}
-				}
-				for (int i = -2; i < 3; ++i) {
-					if (!isInlightened(px - 2, py + i)) {
-						int idx = getIndex(px - 2, py + i);
-						if (idx >= 0) {
-							blocks.remove(idx);
-						}
-					}
-				}
-				for (int i = -1; i < 3; ++i) {
-					int idx = getIndex(px + i, py - 2);
-					if (idx == -1) {
-						generateBlockAt(px + i, py - 2);
-					}
-				}
-				for (int i = -1; i < 2; ++i) {
-					int idx = getIndex(px + 2, py + i);
-					if (idx == -1) {
-						generateBlockAt(px + 2, py + i);
-					}
-				}
-			}
-		} else {
-			if (offset.y > 0) {//Q2
-				for (int i = -2; i < 3; ++i) {
-					if (!isInlightened(px + i, py - 2)) {
-						int idx = getIndex(px + i, py - 2);
-						if (idx >= 0) {
-							blocks.remove(idx);
-						}
-					}
-				}
-				for (int i = -1; i < 3; ++i) {
-					if (!isInlightened(px + 2, py + i)) {
-						int idx = getIndex(px + 2, py + i);
-						if (idx >= 0) {
-							blocks.remove(idx);
-						}
-					}
-				}
-				for (int i = -2; i < 2; ++i) {
-					int idx = getIndex(px + i, py + 2);
-					if (idx == -1) {
-						generateBlockAt(px + i, py + 2);
-					}
-				}
-				for (int i = -1; i < 2; ++i) {
-					int idx = getIndex(px - 2, py + i);
-					if (idx == -1) {
-						generateBlockAt(px - 2, py + i);
-					}
-				}
-			} else {//Q3
-				for (int i = -2; i < 3; ++i) {
-					if (!isInlightened(px + i, py + 2)) {
-						int idx = getIndex(px + i, py + 2);
-						if (idx >= 0) {
-							blocks.remove(idx);
-						}
-					}
-				}
-				for (int i = -2; i < 2; ++i) {
-					if (!isInlightened(px + 2, py + i)) {
-						int idx = getIndex(px + 2, py + i);
-						if (idx >= 0) {
-							blocks.remove(idx);
-						}
-					}
-				}
-				for (int i = -2; i < 2; ++i) {
-					int idx = getIndex(px + i, py - 2);
-					if (idx == -1) {
-						generateBlockAt(px + i, py - 2);
-					}
-				}
-				for (int i = -1; i < 2; ++i) {
-					int idx = getIndex(px - 2, py + i);
-					if (idx == -1) {
-						generateBlockAt(px - 2, py + i);
-					}
-				}
-			}
-		}*/
 	}
 	
 	public void render(Player playerCamera) {
@@ -564,10 +442,10 @@ public class Map {
 	
 	public void removeLight(int index) {
 		for (int i = index; i < numLamps; ++i) {
-			if (i < lamps.length) {
+			if (i + 1 < lamps.length) {
 				lampStrengths[i] = lampStrengths[i + 1];
 				lamps[i] = lamps[i + 1];
-				lampParticles[i] = lampParticles[i + 1];
+				lampParticles[i - 1] = lampParticles[i];
 			}
 		}
 		--numLamps;
@@ -579,5 +457,23 @@ public class Map {
 		lamp = new VAO("res/objects/light.obj");
 		
 		tile = new Texture("res/textures/tile3.png");
+	}
+	
+	public void generateLamp(float x, float y) {
+		lampStrengths[numLamps] = 15f;
+		lamps[numLamps] = new Vector2f(x, y);
+		lampParticles[numLamps - 1] = new LampLight(lamps[numLamps]);
+		
+		for (int bx = (int) Math.floor(x - 15f); bx <= (int) Math.ceil(x + 15f); ++bx) {
+			for (int by = (int) Math.floor(y - 15f); by <= (int) Math.ceil(y + 15f); ++by) {
+				if (isInlightened(bx, by)) {
+					if (getIndex(bx, by) == -1) {
+						generateBlockAt(bx, by);
+					}
+				}
+			}
+		}
+		
+		++numLamps;
 	}
 }

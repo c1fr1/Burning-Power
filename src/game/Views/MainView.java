@@ -226,15 +226,6 @@ public class MainView extends EnigView {
 				proj.brightness -= 0.005f * (brightness + 0.87);
 			}
 			
-			if (proj.brightness < 0 ||
-				proj.y < 0 ||
-				map.isSolid(proj.x, proj.z)) {
-				
-				wraithProjectiles.remove(i);
-				--i;
-				continue;
-			}
-			
 			if (proj.distanceSquared(player) < 0.20f) {
 				player.hp -= 0.05f;
 				

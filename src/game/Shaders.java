@@ -14,6 +14,7 @@ public class Shaders {
 	public static ShaderProgram deadShader;
 	public static ShaderProgram uiShader;
 	public static ShaderProgram dropShader;
+	public static ShaderProgram lootDropShader;
 	public static void createMainShaders() {
 		flipShader = new ShaderProgram("flipShader");
 		textureShader = new ShaderProgram("textureShader");
@@ -26,5 +27,6 @@ public class Shaders {
 		deadShader = new ShaderProgram("deadShader");
 		uiShader = new ShaderProgram("uiShader");
 		dropShader = new ShaderProgram("dropShader");
+		lootDropShader = new ShaderProgram("lootDropShader");
 	}
 }

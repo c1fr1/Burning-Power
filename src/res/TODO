@@ -3,35 +3,44 @@
 stats (out of 5)
 + coolness
 - importance
-! needed for next product
+! needed for next product (B)
 
 
- - Burst of light on wraith's surface where wraiths get hit.            |++++-          |
+ - Burst of light on wraith's surface where wraiths get hit.            |++++-!         !!
  - Completely organize the code                                         |+--            |
  - UI elements                                                          |CAT            |
-    = Current weapon                                                    |+---           |
+    = Current weapon                                                    |+---!          !!
  - Tutorial                                                             |+--            |
  - redo rendering floor and lights                                      |---            |
- - loot                                                                 |CAT ++++--     |
+ - loot                                                                 |CAT ++++--!    !!
     = Weapons                                                           |CATT           |
-        + Spear                                                         |+++++---       |
+        + Spear                                                         |+++++---!      !!
     = Scrolls                                                           |CATT           |
-        + Slab                                                          |+++++-----     |
+        + Slab                                                          |+++++-----!    !!
         + Reign                                                         |+++++          |
-        + Club                                                          |+++----        |
+        + Club                                                          |+++----!       !!
         + Shield                                                        |++++-          |
+    = Storage (gems/crystals?)                                          |+---!          !!
  - sound                                                                |CAT            |
     = port old wraith noises                                            |+++--          |
     = add new sounds for new attack(s)                                  |+--            |
     = find someone to do music or do something else                     |---            |
+ - visualize attacks                                                    |----!          !!
+ - redo wraith spawning                                                 |----!          !!
  */
  /*
 
-loot boxes
-light burst on surface/redo model
-redo floor
-spear
-slab
+product B
+ - loot drops
+ - redo wraith spawning
+ - light burst on surface/redo model of wraiths
+ - spear
+ - slab
+ - club
+ - mana storage
+ - visualize attacks
+
 reign
+redo floor
 
  */

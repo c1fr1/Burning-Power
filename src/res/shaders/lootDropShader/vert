@@ -1,0 +1,16 @@
+#version 330 core
+
+layout (location = 0) in vec3 vertices;
+
+out vec2 worldPosition;
+
+uniform mat4 matrix;
+uniform mat4 worldMatrix;
+uniform float animFrame;
+
+void main() {
+    vec3 pos = vertices;
+    float scalar = 1 / max(abs(pos.x), max(abs(pos.y), abs(pos.z)));
+	gl_Position = matrix * vec4(pos * scalar, 1);
+	worldPosition = (worldMatrix * vec4(pos * scalar, 1)).xz;
+}

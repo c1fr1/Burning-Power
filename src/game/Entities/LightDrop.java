@@ -3,6 +3,7 @@ package game.entities;
 import engine.OpenGL.VAO;
 import game.map.Map;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -26,6 +27,17 @@ public class LightDrop extends Vector3f {
 		this.y = (float) Math.random();
 		this.z = wraith.z + (float) Math.random() - 0.5f;
 	}
+	
+	public LightDrop(Player player, float radius) {
+		scale = 0.05f + (float) Math.random() * 0.1f;
+		rotation = 2f * (float) (Math.random() * Math.PI);
+		Vector2f offset = new Vector2f((float) Math.random() - 0.5f, (float) Math.random() - 0.5f);
+		offset.normalize(radius);
+		this.x = player.x + offset.x;
+		this.y = 0;
+		this.z = player.z + offset.y;
+	}
+	
 	public LightDrop() {
 		super();
 		scale = 0.2f;

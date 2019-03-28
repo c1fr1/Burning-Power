@@ -11,12 +11,14 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 
 import static game.Shaders.floorShader;
+import static game.Shaders.lootDropShader;
 import static game.Shaders.wallShader;
 
 public class Map {
 	public static VAO floorPlane;
 	public static VAO blockCuboid;
 	public static VAO lamp;
+	public static VAO lootBlock;
 	
 	public static Texture tile;
 	
@@ -99,6 +101,7 @@ public class Map {
 		Matrix4f mat = playerCamera.getCameraMatrix();
 		renderWalls(mat);
 		renderLamps(playerCamera, mat);
+		renderLootDrops(mat);
 		renderFloor(playerCamera, mat);
 	}
 	
@@ -130,6 +133,25 @@ public class Map {
 			}
 		}
 		blockCuboid.unbind();
+	}
+	
+	public void renderLootDrops(Matrix4f mat)  {
+		lootDropShader.enable();
+		lootBlock.prepareRender();
+		lootDropShader.setUniform(2, 0, playerDistances);
+		lootDropShader.setUniform(2, 1, lamps);
+		lootDropShader.setUniform(2, 2, lampStrengths);
+		lootDropShader.setUniform(2, 3, numLamps);
+		for (int i = 0; i < blocks.size(); ++i) {
+			Block b = blocks.get(i);
+			if (b.type.equals(BlockType.lootBlock)) {
+				lootDropShader.setUniform(0, 0, mat.translate(b.x, 0.25f, b.y, new Matrix4f()));
+				lootDropShader.setUniform(0, 1, new Matrix4f().translate(b.x, 0.25f, b.y));
+				lootDropShader.setUniform(0, 2, ((LootBlock) b).animationTimer);
+				lootBlock.drawTriangles();
+			}
+		}
+		lootBlock.unbind();
 	}
 	
 	public void renderLamps(Player player, Matrix4f mat) {
@@ -270,13 +292,13 @@ public class Map {
 	public BlockType generateBlockAt(int x, int y) {
 		Block b;
 		if (getType(x + 1, y).equals(BlockType.block)) {
-			b = new Block(BlockType.generateRandomType(), x, y);
+			b = Block.generateRandomBlock(x, y);
 		} else if (getType(x - 1, y).equals(BlockType.block)) {
-			b = new Block(BlockType.generateRandomType(), x, y);
+			b = Block.generateRandomBlock(x, y);
 		} else if (getType(x, y + 1).equals(BlockType.block)) {
-			b = new Block(BlockType.generateRandomType(), x, y);
+			b = Block.generateRandomBlock(x, y);
 		} else if (getType(x, y - 1).equals(BlockType.block)) {
-			b = new Block(BlockType.generateRandomType(), x, y);
+			b = Block.generateRandomBlock(x, y);
 		} else if (getType(x - 1, y - 1).equals(BlockType.block)) {
 			b = new Block(BlockType.empty, x, y);
 		} else if (getType(x - 1, y + 1).equals(BlockType.block)) {
@@ -286,7 +308,7 @@ public class Map {
 		} else if (getType(x + 1, y + 1).equals(BlockType.block)) {
 			b = new Block(BlockType.empty, x, y);
 		} else {
-			b = new Block(BlockType.generateRandomType(), x, y);
+			b = Block.generateRandomBlock(x, y);
 		}
 		insertBlock(b);
 		return b.type;
@@ -455,7 +477,7 @@ public class Map {
 		floorPlane = new VAO(-250, -250, 500, 500, true);
 		blockCuboid = new VAO(-0.5f, 0f, -0.5f, 0.5f, 0.5f, 0.5f);
 		lamp = new VAO("res/objects/light.obj");
-		
+		lootBlock = new VAO("res/objects/lootDrop.obj");
 		tile = new Texture("res/textures/tile3.png");
 	}
 	

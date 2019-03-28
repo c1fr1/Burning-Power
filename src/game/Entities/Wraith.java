@@ -131,13 +131,13 @@ public class Wraith extends Particle {
 				--i;
 			}
 		}
-		if (Math.random() < 0.002) {
+		/*if (Math.random() < 0.002) {
 			Vector2f pos = new Vector2f((float) Math.random() - 0.5f, (float) Math.random() - 0.5f);
 			pos.normalize(10f + 5f * (float) Math.random());
 			if (!map.isInlightened(player.x + pos.x, player.z + pos.y)) {
 				wraiths.add(new Wraith(player.x + pos.x, player.z + pos.y));
 			}
-		}
+		}*/
 	}
 	
 	public boolean collidesWith(Vector3f point) {

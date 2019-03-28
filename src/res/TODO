@@ -12,7 +12,7 @@ stats (out of 5)
     = Current weapon                                                    |+---!          !!
  - Tutorial                                                             |+--            |
  - redo rendering floor and lights                                      |---            |
- - loot                                                                 |CAT ++++--!    !!
+ - loot                                                                 |CAT            |
     = Weapons                                                           |CATT           |
         + Spear                                                         |+++++---!      !!
     = Scrolls                                                           |CATT           |
@@ -31,7 +31,6 @@ stats (out of 5)
  /*
 
 product B
- - loot drops
  - redo wraith spawning
  - light burst on surface/redo model of wraiths
  - spear

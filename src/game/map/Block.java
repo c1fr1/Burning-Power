@@ -11,9 +11,9 @@ public class Block {
 	}
 	public static Block generateRandomBlock(int x, int y) {
 		if (Math.random() > 0.43561839953) {
-			return new LootBlock(x, y);
-		} else if (Math.random() < 0.271828) {
 			return new Block(BlockType.block, x, y);
+		} else if (Math.random() < 0.0986858055f) {
+			return new LootBlock(x, y);
 		} else {
 			return new Block(BlockType.empty, x, y);
 		}
@@ -29,4 +29,6 @@ In the diagram, the latus rectum is pictured in blue, the parabolic segment that
 (The focus of the parabola is the point F and the directrix is the line L.)
 
 https://en.wikipedia.org/wiki/Universal_parabolic_constant
+
+http://mathworld.wolfram.com/LengyelsConstant.html
  */

@@ -28,14 +28,12 @@ public class LightDrop extends Vector3f {
 		this.z = wraith.z + (float) Math.random() - 0.5f;
 	}
 	
-	public LightDrop(Player player, float radius) {
+	public LightDrop(float sx, float sy) {
 		scale = 0.05f + (float) Math.random() * 0.1f;
 		rotation = 2f * (float) (Math.random() * Math.PI);
-		Vector2f offset = new Vector2f((float) Math.random() - 0.5f, (float) Math.random() - 0.5f);
-		offset.normalize(radius);
-		this.x = player.x + offset.x;
+		this.x = sx + (float) Math.random() * 0.5f - 0.25f;
 		this.y = 0;
-		this.z = player.z + offset.y;
+		this.z = sy + (float) Math.random() * 0.5f - 0.25f;
 	}
 	
 	public LightDrop() {

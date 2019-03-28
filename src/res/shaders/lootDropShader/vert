@@ -10,7 +10,7 @@ uniform float animFrame;
 
 void main() {
     vec3 pos = vertices;
-    float scalar = 1 / max(abs(pos.x), max(abs(pos.y), abs(pos.z)));
+    float scalar = 1 + animFrame * (0.25 / max(abs(pos.x), max(abs(pos.y), abs(pos.z))) - 1);
 	gl_Position = matrix * vec4(pos * scalar, 1);
 	worldPosition = (worldMatrix * vec4(pos * scalar, 1)).xz;
 }

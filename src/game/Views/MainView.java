@@ -6,6 +6,7 @@ import game.*;
 import game.entities.*;
 import game.map.Block;
 import game.map.BlockType;
+import game.map.LootBlock;
 import game.map.Map;
 
 import java.util.ArrayList;
@@ -94,6 +95,7 @@ public class MainView extends EnigView {
 		manageWraithProjectiles();
 		LightDrop.manageSet(drops, player);
 		Wraith.manageSet(wraiths, player, map);
+		checkLootDrop();
 	}
 	
 	public void prepRender() {
@@ -149,6 +151,20 @@ public class MainView extends EnigView {
 		lightBarShader.enable();
 		lightBarShader.setUniform(2, 0, player.light - 0.05f * player.attackTimer);
 		hpBar.fullRender();
+	}
+	
+	public void checkLootDrop() {
+		Block b = map.blocks.get(map.getIndex((int) Math.round(player.x), (int) Math.round(player.z)));
+		if (b.type.equals(BlockType.lootBlock)) {
+			LootBlock lb = (LootBlock) b;
+			lb.animationTimer += 0.005f;
+			if (lb.animationTimer >= 1f) {
+				for (int i = -2; i < Math.random() * 3; ++i) {
+					drops.add(new LightDrop(Math.round(player.x), Math.round(player.z)));
+				}
+				lb.type = BlockType.empty;
+			}
+		}
 	}
 	
 	public void managePlayerProjectiles() {

@@ -18,6 +18,8 @@ public class Player extends Camera {
 	public float hp = 1;
 	public float light = 1.000001f;
 	public float attackTimer = 0f;
+	public int spearCount = 10;
+	public int selectedWeapon = 0;
 	
 	public Player(EnigWindow window) {
 		super((float) PI * 0.25f, 0.01f, 1000f, window);
@@ -46,6 +48,15 @@ public class Player extends Camera {
 					light -= 0.4999999f;
 				}
 			}
+		}
+		if (UserControls.checkI(window, 0)) {
+			selectedWeapon = 0;
+		}
+		if (UserControls.checkI(window, 1)) {
+			selectedWeapon = 1;
+		}
+		if (spearCount == 0) {
+			selectedWeapon = 0;
 		}
 	}
 	

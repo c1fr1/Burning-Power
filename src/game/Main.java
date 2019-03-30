@@ -4,6 +4,7 @@ import engine.OpenAL.SoundSource;
 import engine.OpenGL.EnigWindow;
 import engine.OpenGL.VAO;
 import game.entities.LightDrop;
+import game.entities.Spear;
 import game.entities.Wraith;
 import game.views.GameOverView;
 import game.views.MainMenuView;
@@ -55,8 +56,10 @@ public class Main {
 	
 	public static void loadResources() {
 		Map.loadResources();
+		Spear.loadResources();
 		Wraith.loadResources();
 		LightDrop.loadResources();
+		
 		Shaders.createMainShaders();
 	}
 }

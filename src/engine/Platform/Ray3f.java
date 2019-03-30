@@ -13,6 +13,10 @@ public class Ray3f {
 		this.start = new Vector3f(start);
 		this.delta = new Vector3f(delta);
 	}
+	public Ray3f(Ray3f other) {
+		start = new Vector3f(other.start);
+		delta = new Vector3f(other.delta);
+	}
 	public Vector3f getPointAt(float t) {
 		return new Vector3f(start.x + delta.x * t, start.y + delta.y * t, start.z + delta.z * t);
 	}

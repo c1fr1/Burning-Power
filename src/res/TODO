@@ -6,7 +6,6 @@ stats (out of 5)
 ! needed for next product (B)
 
 
- - Burst of light on wraith's surface where wraiths get hit.            |++++-!         !!
  - Completely organize the code                                         |+--            |
  - UI elements                                                          |CAT            |
     = Current weapon                                                    |+---!          !!
@@ -27,7 +26,6 @@ stats (out of 5)
     = add new sounds for new attack(s)                                  |+--            |
     = find someone to do music or do something else                     |---            |
  - visualize attacks                                                    |----!          !!
- - redo wraith spawning                                                 |----!          !!
  */
  /*
 

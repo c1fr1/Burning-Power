@@ -9,11 +9,13 @@ import game.map.Block;
 import game.map.BlockType;
 import game.map.LootBlock;
 import game.map.Map;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
 import static engine.EnigUtils.clearMatrix;
+import static game.Shaders.dropShader;
 import static game.Shaders.hpShader;
 import static game.Shaders.lightBarShader;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
@@ -34,9 +36,11 @@ public class MainView extends EnigView {
 	public ArrayList<Wraith> wraiths;
 	
 	public ArrayList<LightDrop> drops;
+	public ArrayList<Spear> spearDrops;
 	
 	public ArrayList<Projectile> playerProjectiles;
 	public ArrayList<Projectile> wraithProjectiles;
+	public ArrayList<Spear> playerSpears;
 	
 	public MainView(EnigWindow window) {
 		super(window);
@@ -54,8 +58,10 @@ public class MainView extends EnigView {
 		
 		playerProjectiles = new ArrayList<>();
 		wraithProjectiles = new ArrayList<>();
+		playerSpears = new ArrayList<>();
 		drops = new ArrayList<>();
 		wraiths = new ArrayList<>();
+		spearDrops = new ArrayList<>();
 		wraiths.add(new Wraith(5, 0));
 		
 		for (int x = -25; x < 25; ++x) {
@@ -94,9 +100,11 @@ public class MainView extends EnigView {
 	public void manageScene() {
 		player.manage(window, map);
 		managePlayerProjectiles();
+		manageSpears();
 		manageWraithProjectiles();
 		LightDrop.manageSet(drops, player);
 		Wraith.manageSet(wraiths, player, map);
+		manageSpearDrops();
 		checkLootDrop();
 	}
 	
@@ -114,7 +122,9 @@ public class MainView extends EnigView {
 		map.render(player);
 		Wraith.renderSet(wraiths, player);
 		LightDrop.renderSet(drops, map, player);
+		Spear.renderSet(playerSpears, player.getCameraMatrix(), map);
 		renderParticles();
+		renderSpearDrops();
 	}
 	
 	public void checkDeath() {
@@ -164,32 +174,36 @@ public class MainView extends EnigView {
 				for (int i = -2; i < Math.random() * 3; ++i) {
 					drops.add(new LightDrop(Math.round(player.x), Math.round(player.z)));
 				}
+				for (int i = -2; i < Math.random() * 3; ++i) {
+					spearDrops.add(new Spear(Math.round(player.x), Math.round(player.z)));
+				}
 				lb.type = BlockType.empty;
 			}
 		}
 	}
 	
 	public void managePlayerProjectiles() {
-		if (window.mouseButtons[GLFW_MOUSE_BUTTON_LEFT] > 0) {
-			if (player.light > 0.05) {
-				if (player.attackTimer < 1) {
-					player.attackTimer += 0.02000001f;
+		if (player.selectedWeapon == 0) {
+			if (window.mouseButtons[GLFW_MOUSE_BUTTON_LEFT] > 0) {
+				if (player.light > 0.05) {
+					if (player.attackTimer < 1) {
+						player.attackTimer += 0.02000001f;
+					}
+				}
+			} else {
+				if (player.attackTimer > 1) {
+					player.attackTimer = 0f;
+					playerProjectiles.add(new Projectile(player));
+					player.light -= 0.05f;
+				} else {
+					player.attackTimer -= 0.1f;
+					if (player.attackTimer < 0) {
+						player.attackTimer = 0f;
+					}
 				}
 			}
 		} else {
-			if (player.attackTimer > 1) {
-				player.attackTimer = 0f;
-				playerProjectiles.add(new Projectile(player));
-				player.light -= 0.05f;
-			}else {
-				player.attackTimer -= 0.1f;
-				if (player.attackTimer < 0) {
-					player.attackTimer = 0f;
-				}
-			}
-		}
-		if (window.keys[GLFW_KEY_SPACE] == 1) {
-			playerProjectiles.add(new Projectile(player));
+			player.attackTimer = 0;
 		}
 		Projectile proj;
 		for (int i = 0; i < playerProjectiles.size(); ++i) {
@@ -221,6 +235,84 @@ public class MainView extends EnigView {
 				}
 			}
 		}
+	}
+	
+	public void manageSpears() {
+		if (player.selectedWeapon == 1) {
+			if (window.mouseButtons[GLFW_MOUSE_BUTTON_LEFT] == 1) {
+				if (player.spearCount > 0) {
+					playerSpears.add(new Spear(player));
+					--player.spearCount;
+				}
+			}
+		}
+		for (int i = 0; i < playerSpears.size(); ++i) {
+			Spear s = playerSpears.get(i);
+			s.delta.y -= 0.0005f;
+			s.xRotation = (float) Math.asin(-s.delta.y / s.delta.length());
+			s.start.add(s.delta);
+			if (s.start.y < 0 ||
+				map.isSolid(s.start.x, s.start.z)) {
+				playerSpears.remove(i);
+				--i;
+				continue;
+			}
+			for (int j = 0; j < wraiths.size(); ++j) {
+				Wraith w = wraiths.get(j);
+				if (w.collidesWith(new Ray3f(s))) {
+					wraiths.get(j).hp -= 0.6;
+					playerSpears.remove(i);
+					--i;
+					break;
+				}
+			}
+		}
+	}
+	
+	public void manageSpearDrops() {
+		for (int i = 0; i < spearDrops.size(); ++i) {
+			Spear s = spearDrops.get(i);
+			float dsqr = s.start.distanceSquared(player);
+			if (dsqr < 0.01f) {
+				++player.spearCount;
+				spearDrops.remove(i);
+				continue;
+			}
+			if (dsqr < 2) {
+				Vector3f delta = player.sub(s.start, new Vector3f());
+				delta.normalize(0.01f/dsqr);
+				delta.y *= 0.25f;
+				s.start.add(delta);
+				if (s.start.y < 0.4f) {
+					s.delta.y = 0;
+				}
+			}
+			s.delta.y -= 0.0005f;
+			s.start.y += s.delta.y;
+			if (s.start.y < 0) {
+				s.start.y = 0;
+				s.delta.y = 0;
+			}
+		}
+	}
+	
+	public void renderSpearDrops() {
+		Matrix4f mat = player.getCameraMatrix();
+		dropShader.enable();
+		dropShader.setUniform(2, 0, map.playerDistances);
+		dropShader.setUniform(2, 1, map.lamps);
+		dropShader.setUniform(2, 2, map.lampStrengths);
+		dropShader.setUniform(2, 3, map.numLamps);
+		Matrix4f transformationMatrix;
+		Spear.spear.prepareRender();
+		for (int i = 0; i < spearDrops.size(); ++i) {
+			Spear s = spearDrops.get(i);
+			transformationMatrix = new Matrix4f().translate(s.start.x, s.start.y, s.start.z).rotateZ(-(float) Math.PI / 2);
+			dropShader.setUniform(0, 1, transformationMatrix);
+			dropShader.setUniform(0, 0, mat.mul(transformationMatrix, transformationMatrix).scale( 0.1f));
+			Spear.spear.drawTriangles();
+		}
+		Spear.spear.unbind();
 	}
 	
 	public void manageWraithProjectiles() {

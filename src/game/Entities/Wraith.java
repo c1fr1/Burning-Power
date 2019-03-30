@@ -166,7 +166,6 @@ public class Wraith extends Particle {
 				wraiths.add(new Wraith(player.x + pos.x, player.z + pos.y));
 				map.spawnFails = 0;
 			}else {
-				System.out.println(map.spawnFails);
 				++map.spawnFails;
 			}
 		}

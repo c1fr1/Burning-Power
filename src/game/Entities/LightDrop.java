@@ -77,7 +77,7 @@ public class LightDrop extends Vector3f {
 	
 	public boolean manage(Player player) {
 		float dsqr = distanceSquared(player);
-		if (dsqr < 0.25f) {
+		if (dsqr < 0.01f) {
 			return true;
 		}
 		if (dsqr < 2) {
@@ -85,9 +85,11 @@ public class LightDrop extends Vector3f {
 			delta.normalize(0.01f/dsqr);
 			delta.y *= 0.25f;
 			add(delta);
-			yvel = 0;
+			if (y < 0.4f) {
+				yvel = 0;
+			}
 		}
-		yvel -= 0.001f;
+		yvel -= 0.0005f;
 		y += yvel;
 		if (y < 0) {
 			y = 0;

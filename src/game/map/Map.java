@@ -30,6 +30,8 @@ public class Map {
 	
 	public float[] playerDistances;
 	
+	public int spawnFails = 0;
+	
 	public Map() {
 		blocks = new ArrayList<>();
 		lampStrengths = new float[] {5f, 15f, 15f, 0f, 0f, 0f, 0f, 0f, 0f, 0f};

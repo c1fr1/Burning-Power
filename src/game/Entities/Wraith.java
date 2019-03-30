@@ -1,6 +1,9 @@
 package game.entities;
 
+import engine.OpenGL.OBJInformation;
 import engine.OpenGL.VAO;
+import engine.Platform.Ray3f;
+import engine.Platform.Simplex2v3d;
 import game.views.MainView;
 import game.map.Map;
 import org.joml.Matrix4f;
@@ -17,11 +20,15 @@ import static java.lang.Math.sin;
 
 public class Wraith extends Particle {
 	public static VAO model;
+	public static Simplex2v3d[] simplices;
 	public float attackTimer;
 	public float rotation;
 	public float perlinTime = 0;
 	public float hp = 1;
 	public float vhp = 1;
+	public Vector3f[] impacts;
+	public float[] impactStrengths;
+	public static final int maxImpactCount = 5;
 	
 	public Vector3f target;
 	
@@ -31,6 +38,13 @@ public class Wraith extends Particle {
 		this.z = y;
 		perlinTime = 1000f * (float) Math.random();
 		rotation = (float) (Math.random() * Math.PI) * 2f;
+		impacts = new Vector3f[maxImpactCount];
+		impactStrengths = new float[maxImpactCount];
+		
+		for (int i = 0; i < maxImpactCount; ++i) {
+			impactStrengths[i] = -0.0001f;
+			impacts[i] = new Vector3f();
+		}
 	}
 	
 	public static void renderSet(ArrayList<Wraith> wraiths, Player player) {
@@ -45,6 +59,9 @@ public class Wraith extends Particle {
 			wraithShader.setUniform(2, 1, wraiths.get(i).vhp);
 			wraithShader.setUniform(0, 1, (float) Math.sin(wraiths.get(i).perlinTime) / 4);
 			wraithShader.setUniform(0, 0, new Matrix4f(mat).translate(wraiths.get(i).x, 0f, wraiths.get(i).z, new Matrix4f()).rotateY(wraiths.get(i).rotation));
+			wraithShader.setUniform(2, 2, wraiths.get(i).impacts);
+			wraithShader.setUniform(2, 3, wraiths.get(i).impactStrengths);
+			
 			model.drawTriangles();
 		}
 		model.unbind();
@@ -54,6 +71,17 @@ public class Wraith extends Particle {
 		findTarget(player, m);
 		attackTarget();
 		updateHP(m);
+		updateImpacts();
+	}
+	
+	public void updateImpacts() {
+		for (int i = 0; i < maxImpactCount; ++i) {
+			if (impactStrengths[i] > 0) {
+				impactStrengths[i] -= 0.01f;
+			} else {
+				impactStrengths[i] = -0.0000001f;
+			}
+		}
 	}
 	
 	public void findTarget(Vector3f player, Map m) {
@@ -131,25 +159,41 @@ public class Wraith extends Particle {
 				--i;
 			}
 		}
-		if (Math.random() < 0.0015) {
+		if (Math.random() < 0.001 + 0.002 * map.spawnFails) {
 			Vector2f pos = new Vector2f((float) Math.random() - 0.5f, (float) Math.random() - 0.5f);
-			pos.normalize(10f + 5f * (float) Math.random());
+			pos.normalize(10f + 5f * (float) Math.random() + map.spawnFails * 2f);
 			if (!map.isInlightened(player.x + pos.x, player.z + pos.y)) {
 				wraiths.add(new Wraith(player.x + pos.x, player.z + pos.y));
+				map.spawnFails = 0;
+			}else {
+				System.out.println(map.spawnFails);
+				++map.spawnFails;
 			}
 		}
 	}
 	
-	public boolean collidesWith(Vector3f point) {
-		if (point.distanceSquared(new Vector3f(x, 0.4f, z)) < 0.25) {
-			return true;
-		} else {
-			return false;
+	public boolean collidesWith(Ray3f point) {
+		point.translate(-x, 0f, -z);
+		point.rotateY(-rotation);
+		for (int i = 0; i < simplices.length; ++i) {
+			Vector3f intersection = point.intersectionPoint(simplices[i]);
+			if (intersection != null) {
+				for (int j = 0; j < impacts.length; ++j) {
+					if (impactStrengths[j] < 0) {
+						impactStrengths[j] = 1f;
+						impacts[j] = intersection;
+						return true;
+					}
+				}
+				return true;
+			}
 		}
+		return false;
 	}
 	
 	public static void loadResources() {
 		model = new VAO("res/objects/wraith.obj");
+		simplices = OBJInformation.getSimplexArray("res/objects/wraithHitbox.obj");
 	}
 	
 	public Vector3f getColor() {

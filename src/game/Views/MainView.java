@@ -2,12 +2,14 @@ package game.views;
 
 import engine.*;
 import engine.OpenGL.*;
+import engine.Platform.Ray3f;
 import game.*;
 import game.entities.*;
 import game.map.Block;
 import game.map.BlockType;
 import game.map.LootBlock;
 import game.map.Map;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
@@ -211,7 +213,7 @@ public class MainView extends EnigView {
 			}
 			
 			for (int j = 0; j < wraiths.size(); ++j) {
-				if (wraiths.get(j).collidesWith(proj)) {
+				if (wraiths.get(j).collidesWith(new Ray3f(proj, proj.direction.mul(0.08f, new Vector3f())))) {
 					wraiths.get(j).hp -= 0.5 * proj.brightness;
 					playerProjectiles.remove(i);
 					--i;

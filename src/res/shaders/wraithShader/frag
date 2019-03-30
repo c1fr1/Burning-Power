@@ -172,13 +172,27 @@ out vec4 color;
 
 uniform float time;
 uniform float hp;
+uniform vec3[5] impactLocations;
+uniform float[5] impactStrengths;
+
+float impactBrightness(vec3 offset) {
+    return pow(2.718281828, -100 * dot(offset, offset));
+}
+
+float impactBasedBrightness(vec3 pos) {
+    float ret = 0;
+    for (int i = 0; i < 5; ++i) {
+        ret += impactBrightness(impactLocations[i] - pos) * impactStrengths[i];
+    }
+    return ret;
+}
 
 void main() {
-    //TODO impact location brighter for a period of time.
     float grey = cnoise(vec4(10 * pos, time));
     grey = edge(grey + 0.1, 1 - hp);
     grey = 1 - (1 - grey) * (1 - grey);
     grey *= 1 - hp;
+    grey += clamp(impactBasedBrightness(pos), 0, 1);
     grey += clamp(cnoise(vec4(20 * pos, 3 * time + 2171828)) / 5, 0, 1);
     color = vec4(grey, grey, grey, 1);
 }

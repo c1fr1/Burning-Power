@@ -20,7 +20,8 @@ stats (out of 5)
         + Reign                                                         |+++++          |
         + Club                                                          |+++----!       !!
         + Shield                                                        |++++-          |
-    = Storage (gems/crystals?)                                          |+---!          !!
+        + Heal                                                          |----!          |
+    = Storage (gems/crystals?)                                          |+---           |
  - sound                                                                |CAT            |
     = port old wraith noises                                            |+++--          |
     = add new sounds for new attack(s)                                  |+--            |
@@ -31,12 +32,9 @@ stats (out of 5)
  /*
 
 product B
- - redo wraith spawning
- - light burst on surface/redo model of wraiths
  - spear
  - slab
  - club
- - mana storage
  - visualize attacks
 
 reign

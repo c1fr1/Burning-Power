@@ -1,5 +1,6 @@
 package engine.OpenGL;
 
+import engine.Platform.Simplex2v3d;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -189,5 +190,28 @@ public class OBJInformation {//based off of https://github.com/MCRewind/3DGame/b
 			}
 		}
 		return list;
+	}
+	
+	public static Simplex2v3d[] getSimplexArray(String path) {
+		OBJInformation info = new OBJInformation().getInfo(path);
+		Simplex2v3d[] ret = new Simplex2v3d[info.indexArray.length / 3];
+		int idxA;
+		int idxB;
+		int idxC;
+		for (int i = 0; i < ret.length; ++i) {
+			idxA = info.indexArray[i * 3];
+			idxB = info.indexArray[i * 3 + 1];
+			idxC = info.indexArray[i * 3 + 2];
+			ret[i] = new Simplex2v3d(info.vertices[idxA * 3],
+					info.vertices[idxA * 3 + 1],
+					info.vertices[idxA * 3 + 2],
+					info.vertices[idxB * 3],
+					info.vertices[idxB * 3 + 1],
+					info.vertices[idxB * 3 + 2],
+					info.vertices[idxC * 3],
+					info.vertices[idxC * 3 + 1],
+					info.vertices[idxC * 3 + 2]);
+		}
+		return ret;
 	}
 }
